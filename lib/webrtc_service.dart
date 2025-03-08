@@ -146,6 +146,7 @@ class WebRTCService extends ChangeNotifier {
   }
 
   Future<void> _handleOffer(String uuid, Map<String, dynamic> offer) async {
+    print("offer: $offer");
     _peerConnection = await _createPeerConnection();
     try {
       await _peerConnection!.setRemoteDescription(RTCSessionDescription(
