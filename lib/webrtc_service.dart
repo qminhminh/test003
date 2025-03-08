@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, avoid_print, prefer_interpolation_to_compose_strings
+// ignore_for_file: prefer_const_constructors, avoid_print
 
 import 'dart:async';
 import 'dart:convert';
@@ -97,13 +97,6 @@ class WebRTCService extends ChangeNotifier {
     notifyListeners();
   }
 
-  String _filterIPv6FromSDP(String sdp) {
-    List<String> lines = sdp.split("\n");
-    lines.removeWhere(
-        (line) => line.startsWith("a=candidate") && line.contains(":"));
-    return lines.join("\n");
-  }
-
   Future<Map<String, dynamic>> _sendRPC({
     required String method,
     required String uuid,
@@ -155,19 +148,14 @@ class WebRTCService extends ChangeNotifier {
   Future<void> _handleOffer(String uuid, Map<String, dynamic> offer) async {
     _peerConnection = await _createPeerConnection();
     try {
-      // Lọc IPv6 ra khỏi SDP
-      String filteredSdp = _filterIPv6FromSDP(offer['sdp']);
-
-      await _peerConnection!.setRemoteDescription(
-        RTCSessionDescription(filteredSdp, offer['type']),
-      );
-
-      print("[DEBUG] Remote description set successfully (IPv6 removed).");
+      await _peerConnection!.setRemoteDescription(RTCSessionDescription(
+        offer['sdp'],
+        offer['type'],
+      ));
 
       print("[DEBUG] Setting remote description...");
       print("[DEBUG] Remote description set successfully.");
 
-      print("[DEBUG] Creating answer...");
       final answer = await _peerConnection!.createAnswer();
 
       await _peerConnection!.setLocalDescription(answer);
@@ -184,6 +172,16 @@ class WebRTCService extends ChangeNotifier {
     } catch (e) {
       print("Error handler offer: " + e.toString());
     }
+    // await _peerConnection!.setRemoteDescription(RTCSessionDescription(
+    //   offer['sdp'],
+    //   offer['type'],
+    // ));
+
+    // final answer = await _peerConnection!.createAnswer();
+
+    // await _peerConnection!.setLocalDescription(answer);
+    // await waitGatheringComplete();
+    // print("answer: ${answer.toMap()}");
   }
 
   Future<void> waitGatheringComplete() async {
@@ -215,17 +213,8 @@ class WebRTCService extends ChangeNotifier {
     };
 
     pc.onIceCandidate = (RTCIceCandidate candidate) {
-      print("ICE Candidate: ${candidate.candidate}");
-      if (candidate.candidate != null &&
-          candidate.candidate!.contains("typ relay")) {
-        // Chỉ lấy địa chỉ IPv4, bỏ IPv6
-        if (!candidate.candidate!.contains(":")) {
-          print("✅ IPv4 ICE Candidate: ${candidate.toMap()}");
-          pc.addCandidate(candidate);
-        } else {
-          print("❌ Loại bỏ IPv6 ICE Candidate: ${candidate.toMap()}");
-        }
-      }
+      print(
+          "[DEBUG] New ICE Candidate: type=${candidate.candidate}, sdpMLineIndex=${candidate.sdpMLineIndex}, sdpMid=${candidate.sdpMid}");
     };
 
     pc.onIceConnectionState = (RTCIceConnectionState state) {
@@ -242,6 +231,8 @@ class WebRTCService extends ChangeNotifier {
     pc.onConnectionState = (RTCPeerConnectionState state) {
       print("[DEBUG] Peer Connection State Changed: ${state.toString()}");
     };
+
+    print("[DEBUG] Creating answer...");
 
     return pc;
   }
