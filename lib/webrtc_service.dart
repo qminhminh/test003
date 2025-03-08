@@ -19,12 +19,12 @@ class WebRTCService extends ChangeNotifier {
   final config = {
     'iceServers': [
       {
-        'urls': 'stun:stun-connect.fcam.vn:3478',
+        'urls': 'stun:demo.espitek.com:3478',
       },
       {
-        'urls': 'turn:stun-connect.fcam.vn:3478',
-        'username': 'turnuser',
-        'credential': 'camfptvnturn133099',
+        'urls': 'turn:demo.espitek.com:3478',
+        'username': 'demo',
+        'credential': 'demo4924',
       },
     ],
   };

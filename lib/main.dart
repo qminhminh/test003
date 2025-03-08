@@ -80,7 +80,7 @@ class _WebRTCPageState extends State<WebRTCPage> {
                             : () {
                                 webrtcService.connect(
                                   ipcUuid:
-                                      "2500e410-9055-11ef-a41f-ffffca4e13b8",
+                                      "41cf0f00-936a-11ef-a41f-ffffca4e13b8",
                                   username: "demo2@epcb.vn",
                                   password: "demo2@123",
                                 );
@@ -141,7 +141,7 @@ class _WebRTCPageState extends State<WebRTCPage> {
                 ? webrtcService.disconnect
                 : () {
                     webrtcService.connect(
-                      ipcUuid: "2500e410-9055-11ef-a41f-ffffca4e13b8",
+                      ipcUuid: "41cf0f00-936a-11ef-a41f-ffffca4e13b8",
                       username: "demo2@epcb.vn",
                       password: "demo2@123",
                     );
